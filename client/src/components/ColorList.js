@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
 
 const initialColor = {
   color: "",
   code: { hex: "" }
 };
 
-const ColorList = ({ colors, updateColors }) => {
+const ColorList = ({ colors, updateColors, getData }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
@@ -22,26 +22,27 @@ const ColorList = ({ colors, updateColors }) => {
     // think about where will you get the id from...
     // where is is saved right now?
 
-    axios
-      .put(`http://localhost:5000/api/colors/${colors.id}`)
+    axiosWithAuth()
+      .put(`http://localhost:5000/api/colors/${colors.id}`, colorToEdit)
       .then(res => {
-        console.log(res);
+        console.log("axios data", res.data);
         setColorToEdit(initialColor);
         updateColors(res.data);
         colors.history.push("/colors");
-      })
-      .catch(err => console.log(err.response));
+      });
+    // .catch(err => console.log(err.response));
   };
 
-  const deleteColor = event => color => {
+  const deleteColor = (event, color, history) => {
     event.preventDefault();
-    axios
+    axiosWithAuth()
       .delete(`http://localhost:5000/api/colors/${color.id}`)
       .then(res => {
-        this.props.updateColors(res.data);
-        this.props.history.push("/colors");
-      })
-      .catch(err => console.log(err.response));
+        console.log(res);
+        updateColors(res.data);
+        history.push("/colors");
+      });
+    // .catch(err => console.log(err.response));
   };
 
   return (
@@ -51,9 +52,12 @@ const ColorList = ({ colors, updateColors }) => {
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
             <span>
-              <span className="delete" onClick={() => deleteColor(color)}>
+              <span
+                className="delete"
+                onClick={event => deleteColor(event, color)}
+              >
                 x
-              </span>{" "}
+              </span>
               {color.color}
             </span>
             <div
