@@ -9,7 +9,7 @@ const initialColor = {
   code: { hex: "" }
 };
 
-const BubblePage = () => {
+const BubblePage = props => {
   const [colorList, setColorList] = useState([]);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
 
@@ -37,7 +37,6 @@ const BubblePage = () => {
 
   useEffect(() => {
     getColors();
-    updateColors();
   }, []);
 
   return (
@@ -45,10 +44,12 @@ const BubblePage = () => {
       <ColorList
         getColors={getColors}
         colors={colorList}
-        updateColors={setColorList}
+        setColorList={setColorList}
+        updateColors={updateColors}
         initialColor={initialColor}
         colorToEdit={colorToEdit}
         setColorToEdit={setColorToEdit}
+        history={props.history}
       />
       <Bubbles colors={colorList} />
     </>

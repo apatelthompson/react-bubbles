@@ -23,14 +23,14 @@ const ColorList = ({
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
-
     axiosWithAuth()
-      .put(`http://localhost:5000/api/colors/${colors.id}`, colorToEdit)
+      .put(`http://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
       .then(res => {
         console.log("axios data", res);
+        console.log("colorToEdit", colorToEdit);
         setColorToEdit(initialColor);
         updateColors(res.data);
-        history.push("/colors");
+        history.push("/bubblepage");
       });
     // .catch(err => console.log(err.response));
   };
@@ -38,11 +38,11 @@ const ColorList = ({
   const deleteColor = (event, color) => {
     event.preventDefault();
     axiosWithAuth()
-      .delete(`http://localhost:5000/api/colors/${color.id}`)
+      .delete(`http://localhost:5000/api/colors/${colorToEdit.id}`)
       .then(res => {
-        console.log(res);
+        console.log(res.data);
         updateColors(res.data);
-        history.push("/colors");
+        history.push("/bubblepage");
       });
     // .catch(err => console.log(err.response));
   };
@@ -50,6 +50,7 @@ const ColorList = ({
   return (
     <div className="colors-wrap">
       <p>colors</p>
+      console.log("edit", color)
       <ul>
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
@@ -62,6 +63,7 @@ const ColorList = ({
               </span>
               {color.color}
             </span>
+
             <div
               className="color-box"
               style={{ backgroundColor: color.code.hex }}
@@ -81,6 +83,7 @@ const ColorList = ({
               value={colorToEdit.color}
             />
           </label>
+
           <label>
             hex code:
             <input
