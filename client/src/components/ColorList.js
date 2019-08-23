@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 
-const initialColor = {
-  color: "",
-  code: { hex: "" }
-};
-
-const ColorList = ({ colors, updateColors, getData }) => {
-  console.log(colors);
+const ColorList = ({
+  colors,
+  updateColors,
+  getData,
+  history,
+  initialColor,
+  colorToEdit,
+  setColorToEdit
+}) => {
+  // console.log(colors);
   const [editing, setEditing] = useState(false);
-  const [colorToEdit, setColorToEdit] = useState(initialColor);
 
   const editColor = color => {
     setEditing(true);
@@ -25,15 +27,15 @@ const ColorList = ({ colors, updateColors, getData }) => {
     axiosWithAuth()
       .put(`http://localhost:5000/api/colors/${colors.id}`, colorToEdit)
       .then(res => {
-        console.log("axios data", res.data);
+        console.log("axios data", res);
         setColorToEdit(initialColor);
         updateColors(res.data);
-        colors.history.push("/colors");
+        history.push("/colors");
       });
     // .catch(err => console.log(err.response));
   };
 
-  const deleteColor = (event, color, history) => {
+  const deleteColor = (event, color) => {
     event.preventDefault();
     axiosWithAuth()
       .delete(`http://localhost:5000/api/colors/${color.id}`)
