@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 
-const ColorList = ({
-  colors,
-  updateColors,
-  getData,
-  history,
-  initialColor,
-  colorToEdit,
-  setColorToEdit
-}) => {
-  // console.log(colors);
+const initialColor = {
+  color: "",
+  code: { hex: "" }
+};
+
+const ColorList = ({ colors, updateColors }) => {
+  console.log(colors);
+
+  const [colorToEdit, setColorToEdit] = useState(initialColor);
   const [editing, setEditing] = useState(false);
+  const [newColor, setNewColor] = useState({ color: "", code: { hex: "" } });
 
   const editColor = color => {
     setEditing(true);
@@ -27,38 +27,48 @@ const ColorList = ({
       .put(`http://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
       .then(res => {
         console.log("axios data", res);
-        console.log("colorToEdit", colorToEdit);
-        setColorToEdit(initialColor);
-        updateColors(res.data);
-        history.push("/bubblepage");
-      });
-    // .catch(err => console.log(err.response));
+        const updatedColors = colors.map(color =>
+          color.id === colorToEdit.id ? res.data : color
+        );
+        updateColors(updatedColors);
+        setEditing(false);
+      })
+      .catch(err => console.log(err.response));
   };
 
-  const deleteColor = (event, color) => {
-    event.preventDefault();
+  const deleteColor = color => {
     axiosWithAuth()
-      .delete(`http://localhost:5000/api/colors/${colorToEdit.id}`)
+      .delete(`http://localhost:5000/api/colors/${color.id}`)
       .then(res => {
         console.log(res.data);
+        const updatedColors = colors.filter(color => color.id !== color.id);
+        updateColors(updatedColors);
+      })
+      .catch(err => console.log(err.response));
+  };
+
+  const addColor = event => {
+    event.preventDefault();
+    // Make a put request to save your updated color
+    // think about where will you get the id from...
+    // where is is saved right now?
+    axiosWithAuth()
+      .post(`http://localhost:5000/api/colors`, newColor)
+      .then(res => {
+        console.log("axios post data", res);
         updateColors(res.data);
-        history.push("/bubblepage");
-      });
-    // .catch(err => console.log(err.response));
+      })
+      .catch(err => console.log(err.response));
   };
 
   return (
     <div className="colors-wrap">
       <p>colors</p>
-      console.log("edit", color)
       <ul>
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
             <span>
-              <span
-                className="delete"
-                onClick={event => deleteColor(event, color)}
-              >
+              <span className="delete" onClick={event => deleteColor(color)}>
                 x
               </span>
               {color.color}
@@ -97,7 +107,42 @@ const ColorList = ({
             />
           </label>
           <div className="button-row">
-            <button type="submit">save</button>
+            <button type="submit" onClick={saveEdit}>
+              save
+            </button>
+            <button onClick={() => setEditing(false)}>cancel</button>
+          </div>
+        </form>
+      )}
+      {!editing && (
+        <form onSubmit={addColor}>
+          <legend>add color</legend>
+          <label>
+            color name:
+            <input
+              onChange={e =>
+                setNewColor({ ...newColor, color: e.target.value })
+              }
+              value={newColor.color}
+            />
+          </label>
+
+          <label>
+            hex code:
+            <input
+              onChange={e =>
+                setNewColor({
+                  ...newColor,
+                  code: { hex: e.target.value }
+                })
+              }
+              value={newColor.code.hex}
+            />
+          </label>
+          <div className="button-row">
+            <button type="submit" onClick={addColor}>
+              add
+            </button>
             <button onClick={() => setEditing(false)}>cancel</button>
           </div>
         </form>

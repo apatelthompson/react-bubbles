@@ -4,14 +4,8 @@ import { axiosWithAuth } from "../utils/axiosWithAuth";
 import Bubbles from "./Bubbles";
 import ColorList from "./ColorList";
 
-const initialColor = {
-  color: "",
-  code: { hex: "" }
-};
-
 const BubblePage = props => {
   const [colorList, setColorList] = useState([]);
-  const [colorToEdit, setColorToEdit] = useState(initialColor);
 
   console.log("bubblepage", colorList);
   // fetch your colors data from the server when the component mounts
@@ -21,18 +15,9 @@ const BubblePage = props => {
       .get("http://localhost:5000/api/colors")
       .then(res => {
         console.log(res.data);
-        const colorList = res.data;
-        setColorList(colorList);
+        setColorList(res.data);
       })
       .catch(err => console.log(err.response));
-  };
-
-  const updateColors = () => {
-    setColorList(
-      colorList.map(color =>
-        color.id === colorToEdit.id ? setColorToEdit : color
-      )
-    );
   };
 
   useEffect(() => {
@@ -41,16 +26,7 @@ const BubblePage = props => {
 
   return (
     <>
-      <ColorList
-        getColors={getColors}
-        colors={colorList}
-        setColorList={setColorList}
-        updateColors={updateColors}
-        initialColor={initialColor}
-        colorToEdit={colorToEdit}
-        setColorToEdit={setColorToEdit}
-        history={props.history}
-      />
+      <ColorList colors={colorList} updateColors={setColorList} />
       <Bubbles colors={colorList} />
     </>
   );
