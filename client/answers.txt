@@ -1,0 +1,19 @@
+* Explain what a token is used for.
+It’s a way to allow users to access certain information only if they have authorization to - for example if a user is properly logged in, and authenticated by the server, then the server will return a token to be used with the API calls.
+
+
+* What steps can you take in your web apps to keep your data secure?
+limit ways to access the data
+use Protected routes
+build user authentication that uses a token with API calls
+do proper testing to find any vulnerabilities
+
+
+* Describe how web servers work.
+Web servers can both be the physical computer and the software program  that dispense the web page asked for by the web client. A users requested a page on the internet by typing in a url (which is a user friendly version of an IP address). The browser then requests the full URL from the web server. The server then sends the requested pages. The browser displays the pages (or an error if appropriate).
+
+* Which HTTP methods can be mapped to the CRUD acronym that we use when interfacing with APIs/Servers.
+	Create -> POST
+	Read -> GET
+	Update -> PUT
+	Delete -> DELETE
